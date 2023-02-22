@@ -1,0 +1,58 @@
+#!/usr/bin/python3
+#
+# Place this file in your execution path and proceed to git gud
+#
+
+import sys, select
+import random
+
+alive = True
+print("A large knight with a very large sword approaches")
+
+hits_required_to_win = 3
+actions = [
+  ("He's gearing up for an attack!", 'p', 'd'),
+  ("He's getting ready to lunge at you!", 'a', 'p'),
+  ("His shield is raised, and he's about to charge!", 'd', 'a'),
+  ("He's stunned!", 'a', '')
+]
+
+
+action_time = 3.0
+action_index = 0
+while alive and hits_required_to_win > 0:
+  prompt, winning_move, losing_move = actions[action_index]
+
+  print(prompt)
+
+  print("[a]ttack, [d]odge, [p]arry")
+
+  i, o, e = select.select( [sys.stdin], [], [],  action_time)
+
+  v = None
+  if i:
+    # If there was an input, read it and see if we win
+    v = sys.stdin.readline().strip()
+    if v == winning_move:
+      hits_required_to_win -= 1
+    elif v == losing_move:
+      alive = False
+  # No action is instant death
+  elif losing_move:
+    alive = False
+
+  # Decrease the action time for the next move, down to a floor of 1 sec
+  action_time = max(1.0, action_time - random.random())
+  # If we had the winning move, and the enemy is not stunned already, we have a chance of stunning it.
+  if v == winning_move and action_index != 3:
+    action_index = int(4 * random.random())
+  else:
+    action_index = int(3 * random.random())
+
+if (alive):
+  print("VICTORY ACHIEVED")
+else:
+  print("YOU DIED")
+
+    
+
